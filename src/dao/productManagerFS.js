@@ -1,4 +1,4 @@
-import FileManager from "./fileManager.js";
+import FileManager from "./fileManagerFS.js";
 
 export default class ProductManager {
   constructor(archivo) {

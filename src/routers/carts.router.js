@@ -1,10 +1,10 @@
 import { Router } from "express";
-import CartManager from "../controllers/cartManager.js";
-import ProductManager from "../controllers/productManager.js";
+import CartManager from "../dao/cartManagerFS.js";
+import ProductManager from "../dao/productManagerFS.js";
 
 const router = Router();
-const productManager = new ProductManager("src/db/products.json");
-const cartManager = new CartManager("src/db/carts.json");
+const productManager = new ProductManager("src/db/jsons/products.json");
+const cartManager = new CartManager("src/db/jsons/carts.json");
 const notFound = { error: "Cart not found" };
 
 /* ok: 200

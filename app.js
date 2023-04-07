@@ -3,9 +3,10 @@ import routers from "./src/routers/index.routers.js";
 import { __dirname } from "./src/utils.js";
 import handlebars from "express-handlebars";
 import { Server } from "socket.io";
-import ProductManager from "./src/controllers/productManager.js";
-const productManager = new ProductManager("src/db/products.json");
+import ProductManager from "./src/dao/productManagerFS.js";
+import "./src/db/dbConfig.js";
 
+const productManager = new ProductManager("src/db/jsons/products.json");
 const app = express();
 const PORT = 8080;
 
