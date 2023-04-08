@@ -1,14 +1,16 @@
-import express, { json } from "express";
-import routers from "./src/routers/index.routers.js";
-import { __dirname } from "./src/utils.js";
+import express from "express";
 import handlebars from "express-handlebars";
 import { Server } from "socket.io";
-import ProductManager from "./src/dao/productManagerFS.js";
+import routers from "./src/routers/index.routers.js";
+import { __dirname } from "./src/utils.js";
+import ProductManager from "./src/dao/fs/productManagerFS.js";
+import ChatManager from "./src/dao/mongo/chatManagerMongo.js";
 import "./src/db/dbConfig.js";
 
-const productManager = new ProductManager("src/db/jsons/products.json");
 const app = express();
 const PORT = 8080;
+const productManager = new ProductManager("src/db/jsons/products.json");
+const chatManager = new ChatManager();
 
 /* middlewares */
 app.use(express.json());
@@ -44,6 +46,8 @@ httpServer.on("error", error =>
 const socketServer = new Server(httpServer);
 socketServer.on("connection", async socket => {
   const products = await productManager.getAll();
+  const messages = await chatManager.getAllMessages();
+
   socket.emit("products", products);
 
   socket.on("newProduct", async data => {
@@ -54,5 +58,12 @@ socketServer.on("connection", async socket => {
   socket.on("deleteProduct", async id => {
     const products = await productManager.deleteById(id);
     socket.emit("products", products);
+  });
+
+  socket.emit("messages", messages);
+
+  socket.on("newMessage", async data => {
+    await chatManager.addMessage(data);
+    socket.emit("messages", messages);
   });
 });

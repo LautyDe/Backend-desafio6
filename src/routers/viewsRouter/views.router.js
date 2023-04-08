@@ -1,8 +1,10 @@
 import { Router } from "express";
-import ProductManager from "../../dao/productManagerFS.js";
+import ProductManager from "../../dao/fs/productManagerFS.js";
+import ChatManager from "../../dao/mongo/chatManagerMongo.js";
 
 const router = Router();
 const productManager = new ProductManager("src/db/jsons/products.json");
+const chatManager = new ChatManager();
 
 /* home */
 router.get("/", async (req, res) => {
@@ -21,6 +23,16 @@ router.get("/realtimeproducts", async (req, res) => {
     style: "realTimeProducts.css",
     title: "Real Time Products",
     products: products,
+  });
+});
+
+/* chat */
+router.get("/chat", async (req, res) => {
+  const messages = await chatManager.getAllMessages();
+  res.render("chat", {
+    style: "chat.css",
+    title: "Chat",
+    messages: messages,
   });
 });
 

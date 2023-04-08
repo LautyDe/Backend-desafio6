@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const URI =
-  "mongodb+srv://lautydp:lautydp@cluster0.axvssct.mongodb.net/ecommerce?retryWrites=true&w=majority";
+  "mongodb+srv://lautydp:lautydp@cluster0.mbl12o1.mongodb.net/ecommerce?retryWrites=true&w=majority";
 
 try {
   mongoose.connect(URI);
