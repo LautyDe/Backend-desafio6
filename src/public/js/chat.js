@@ -8,7 +8,7 @@ function render(data) {
   const html = data
     .map(item => {
       return `<div class="message">
-      <p class="messageItem">${item.user}: ${item.message}</p>
+      <p class="messageUser">${item.user}:</p> <p class="messageText">${item.message}</p>
       </div>
       `;
     })

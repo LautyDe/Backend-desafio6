@@ -1,8 +1,9 @@
 import { Router } from "express";
-import ProductManager from "../dao/fs/productManagerFS.js";
+//import ProductManager from "../dao/fs/productManagerFS.js";
+import ProductManager from "../dao/mongo/productManagerMongo.js";
 
 const router = Router();
-const productManager = new ProductManager("src/db/jsons/products.json");
+const productManager = new ProductManager();
 const notFound = { error: "Product not found" };
 
 /* ok: 200

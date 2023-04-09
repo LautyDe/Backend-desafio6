@@ -1,8 +1,8 @@
 import FileManager from "./fileManagerFS.js";
 
 export default class ProductManager {
-  constructor(archivo) {
-    this.archivo = archivo;
+  constructor() {
+    this.archivo = "src/db/jsons/products.json";
     this._fileManager = new FileManager(this.archivo);
   }
 

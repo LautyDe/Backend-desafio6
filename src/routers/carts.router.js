@@ -1,10 +1,12 @@
 import { Router } from "express";
-import CartManager from "../dao/fs/cartManagerFS.js";
+//import CartManager from "../dao/fs/cartManagerFS.js";
+import CartManager from "../dao/mongo/cartManagerMongo.js";
 import ProductManager from "../dao/fs/productManagerFS.js";
+//import ProductManager from "./src/dao/mongo/productManagerMongo.js";
 
 const router = Router();
-const productManager = new ProductManager("src/db/jsons/products.json");
-const cartManager = new CartManager("src/db/jsons/carts.json");
+const productManager = new ProductManager();
+const cartManager = new CartManager();
 const notFound = { error: "Cart not found" };
 
 /* ok: 200
@@ -23,7 +25,7 @@ router.post("/", async (req, res) => {
 
 router.get("/:cid", async (req, res) => {
   const { cid } = req.params;
-  const cart = await cartManager.getById(parseInt(cid));
+  const cart = await cartManager.getById(+cid);
   !cart ? res.status(404).json(notFound) : res.status(200).json(cart);
 });
 

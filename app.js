@@ -4,12 +4,13 @@ import { Server } from "socket.io";
 import routers from "./src/routers/index.routers.js";
 import { __dirname } from "./src/utils.js";
 import ProductManager from "./src/dao/fs/productManagerFS.js";
+//import ProductManager from "./src/dao/mongo/productManagerMongo.js";
 import ChatManager from "./src/dao/mongo/chatManagerMongo.js";
 import "./src/db/dbConfig.js";
 
 const app = express();
 const PORT = 8080;
-const productManager = new ProductManager("src/db/jsons/products.json");
+const productManager = new ProductManager();
 const chatManager = new ChatManager();
 
 /* middlewares */

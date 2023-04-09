@@ -1,69 +1,17 @@
-import FileManager from "./fileManagerMongo.js";
+import { productsModel } from "../models/products.model.js";
 
 export default class ProductManager {
-  constructor(archivo) {
-    this.archivo = archivo;
-    this._fileManager = new FileManager(this.archivo);
-  }
-
   async addProduct(product) {
     try {
       /* verifico que el producto tenga todos los parametros */
       if (this.#paramsValidator(product)) {
-        /* busco si el archivo no existe o si existe, si tiene datos*/
-        if (!this._fileManager.exists(this.archivo)) {
-          /* Si el archivo no existe, lo creo con el primer carrito agregado */
-          console.log("Se crea archivo");
-          const productsArray = [];
-          product = {
-            id: this.#idGenerator(productsArray),
-            code: this.#codeGenerator(),
-            status: true,
-            ...product,
-          };
-          if (!product.thumbnail) {
-            product.thumbnail = "";
-          }
-          productsArray.push(product);
-          console.log("Agregando producto...");
-          await this._fileManager.writeFile(this.archivo, productsArray);
-          console.log(`Se agrego el producto con el id: ${product.id}`);
-          return product.id;
-        } else {
-          /* si el archivo existe, primero verifico si esta vacio */
-          if (this._fileManager.readFile(this.archivo)) {
-            console.log("Leyendo archivo...");
-            const productsArray = await this._fileManager.readFile(
-              this.archivo
-            );
-            if (productsArray.length === 0) {
-              /* si esta vacio no le paso parametro al idGenerator, por lo que le pondra id: 1 */
-              product = {
-                id: this.#idGenerator(),
-                code: this.#codeGenerator(),
-                status: true,
-                ...product,
-              };
-            } else {
-              /* si ya tiene algun producto, le paso el array de productos como parametro al idGenerator para que le ponga el id correspondiente */
-              product = {
-                id: this.#idGenerator(productsArray),
-                code: this.#codeGenerator(),
-                status: true,
-                ...product,
-              };
-            }
-            console.log("Agregando producto...");
-            if (!product.thumbnail) {
-              product.thumbnail = "";
-            }
-            productsArray.push(product);
-            /* escribo el producto */
-            this._fileManager.writeFile(this.archivo, productsArray);
-            console.log(`Se agrego el producto con el id: ${product.id}`);
-            return product.id;
-          }
-        }
+        product = {
+          code: this.#codeGenerator(),
+          status: true,
+          ...product,
+        };
+        const newProduct = await productsModel.create(product);
+        return newProduct;
       }
     } catch (error) {
       console.log(`Error agregando producto: ${error.message}`);
@@ -72,16 +20,8 @@ export default class ProductManager {
 
   async getAll() {
     try {
-      /* chequeo si existe el documento */
-      if (this._fileManager.exists(this.archivo)) {
-        const productsArray = await this._fileManager.readFile(this.archivo);
-        /* una vez que verifico que existe, veo si esta vacio o si tiene contenido */
-        if (productsArray.length !== 0) {
-          return productsArray;
-        } else {
-          throw new Error(`El archivo ${this.archivo} esta vacio`);
-        }
-      }
+      const allProducts = await productsModel.find();
+      return allProducts;
     } catch (error) {
       console.log(`Error obteniendo todos los productos: ${error.message}`);
     }
@@ -89,20 +29,16 @@ export default class ProductManager {
 
   async getById(id) {
     try {
-      /* chequeo si existe el documento */
-      if (this._fileManager.exists(this.archivo)) {
-        const productsArray = await this._fileManager.readFile(this.archivo);
-        /* uso find para buscar el producto que coincida con el id solicitado */
-        const productId = productsArray.find(item => item.id === id);
-        if (!productId) {
-          throw new Error("No se encontro un producto con el id solicitado");
-        } else {
-          console.log(`Producto con el id ${id} encontrado:\n`, productId);
-          return productId;
-        }
+      const product = await productsModel.find({ _id: id });
+      if (product) {
+        return product;
+      } else {
+        throw new Error(`Producto con id ${id} no encontrado`);
       }
     } catch (error) {
-      console.log(`Error al buscar producto con el id ${id}: ${error.message}`);
+      console.log(
+        `Error al buscar producto con el id solicitado: ${error.message}`
+      );
     }
   }
 
@@ -130,23 +66,12 @@ export default class ProductManager {
 
   async deleteById(id) {
     try {
-      /* chequeo si existe el documento */
-      if (this._fileManager.exists(this.archivo)) {
-        const productsArray = await this._fileManager.readFile(this.archivo);
-        /* verifico que exista el producto con el id solicitado */
-        console.log(`Buscando producto con id: ${id}`);
-        if (productsArray.some(item => item.id === id)) {
-          const productsArray = await this._fileManager.readFile(this.archivo);
-          const removedProduct = await this.getById(id);
-          /* elimino el producto */
-          console.log(`Eliminando producto con id solicitado...`);
-          const newProductsArray = productsArray.filter(item => item.id !== id);
-          this._fileManager.writeFile(this.archivo, newProductsArray);
-          console.log(`Producto con el id ${id} eliminado`);
-          return removedProduct;
-        } else {
-          throw new Error(`No se encontro el producto con el id ${id}`);
-        }
+      const deletedProduct = await this.getById(id);
+      if (deletedProduct) {
+        await productsModel.deleteOne({ _id: id });
+        return deletedProduct;
+      } else {
+        throw new Error(`Producto con id ${id} no encontrado`);
       }
     } catch (error) {
       console.log(
@@ -157,15 +82,8 @@ export default class ProductManager {
 
   async deleteAll() {
     try {
-      /* chequeo si existe el documento */
-      if (this._fileManager.exists(this.archivo)) {
-        let newArray = [];
-        console.log("Borrando datos...");
-        await this._fileManager.writeFile(this.archivo, newArray);
-        console.log(`Se borraron todos los datos del archivo ${this.archivo}`);
-      } else {
-        throw new Error(`El archivo ${this.archivo} no existe`);
-      }
+      await productsModel.deleteMany();
+      return "Productos eliminados";
     } catch (error) {
       console.log(`Ocurrio un error eliminando los datos: ${error.message}`);
     }
@@ -181,14 +99,6 @@ export default class ProductManager {
       code += numYLetras.charAt(random);
     }
     return code;
-  }
-
-  #idGenerator(productsArray = []) {
-    const id =
-      productsArray.length === 0
-        ? 1
-        : productsArray[productsArray.length - 1].id + 1;
-    return id;
   }
 
   #paramsValidator(product) {

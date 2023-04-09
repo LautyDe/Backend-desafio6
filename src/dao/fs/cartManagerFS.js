@@ -1,8 +1,8 @@
 import FileManager from "./fileManagerFS.js";
 
 export default class CartManager {
-  constructor(archivo) {
-    this.archivo = archivo;
+  constructor() {
+    this.archivo = "src/db/jsons/products.json";
     this._fileManager = new FileManager(this.archivo);
   }
 
@@ -78,9 +78,11 @@ export default class CartManager {
       /* chequeo si existe el documento */
       if (this._fileManager.exists(this.archivo)) {
         const cartsArray = await this._fileManager.readFile(this.archivo);
-        const cart = cartsArray.find(item => item.id === cid);
+        const cart = await cartsArray.find(item => item.id === cid);
         if (cart) {
-          const addProduct = cart.products.find(item => item.product === pid);
+          const addProduct = await cart.products.find(
+            item => item.product === pid
+          );
           if (addProduct) {
             addProduct.quantity++;
           } else {

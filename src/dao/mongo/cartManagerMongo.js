@@ -3,7 +3,7 @@ import { cartsModel } from "../models/carts.model.js";
 export default class CartManager {
   async createCart() {
     try {
-      const cart = await cartsModel.create();
+      const cart = await cartsModel.create({});
       return cart;
     } catch (error) {
       console.log(`Error creando carrito: ${error.message}`);
@@ -23,8 +23,6 @@ export default class CartManager {
 
   async addToCart(cid, pid) {
     try {
-      const cart = await this.getById(cid);
-      const carts = await cartsModel.updateOne({ _id: cid }, { $set: {} });
     } catch (error) {
       console.log(`Error agregando producto al carrito: ${error.message}`);
     }
