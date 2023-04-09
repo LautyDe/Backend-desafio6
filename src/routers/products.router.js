@@ -29,7 +29,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:pid", async (req, res) => {
   const { pid } = req.params;
-  const product = await productManager.getById(parseInt(pid));
+  const product = await productManager.getById(pid);
   !product ? res.status(404).json(notFound) : res.status(200).json(product);
 });
 
@@ -44,10 +44,7 @@ router.post("/", async (req, res) => {
 router.put("/:pid", async (req, res) => {
   const { pid } = req.params;
   const modification = req.body;
-  const modifiedProduct = await productManager.updateProduct(
-    parseInt(pid),
-    modification
-  );
+  const modifiedProduct = await productManager.updateProduct(pid, modification);
   !modifiedProduct
     ? res.status(400).json({ error: `No se pudo modificar el producto` })
     : res.status(200).json(modifiedProduct);

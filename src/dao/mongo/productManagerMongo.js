@@ -44,18 +44,13 @@ export default class ProductManager {
 
   async updateProduct(id, product) {
     try {
-      /* chequeo si existe el documento */
-      if (this._fileManager.exists(this.archivo)) {
-        const productsArray = await this._fileManager.readFile(this.archivo);
-        const productsIndex = productsArray.findIndex(item => item.id === id);
-        if (productsIndex !== -1) {
-          const updateProduct = { ...productsArray[productsIndex], ...product };
-          productsArray.splice(productsIndex, 1, updateProduct);
-          await this._fileManager.writeFile(this.archivo, productsArray);
-          return updateProduct;
-        } else {
-          throw new Error(`No se encontro un producto con el id solicitado`);
-        }
+      const productFinded = await this.getById(id);
+      if (productFinded) {
+        await productsModel.findOneAndUpdate({ _id: id }, product);
+        const updatedProduct = await this.getById(id);
+        return updatedProduct;
+      } else {
+        throw new Error(`No se encontro el producto con el id solicitado`);
       }
     } catch (error) {
       console.log(
