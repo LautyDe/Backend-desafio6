@@ -17,9 +17,9 @@ function render(data) {
       }' class='img'>
       <div>${item.category}</div>  
       <div>${item.stock}</div>
-      <input type="button" value="Eliminar producto 😭" onclick="deleteProduct(${
-        item.id
-      })"></input>
+      <input type="button" value="Eliminar producto 😭" onclick="deleteProduct('${
+        item._id
+      }')"></input>
       </div>
       `;
     })

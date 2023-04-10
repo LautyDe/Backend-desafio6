@@ -64,7 +64,7 @@ export default class ProductManager {
       const deletedProduct = await this.getById(id);
       if (deletedProduct) {
         await productsModel.deleteOne({ _id: id });
-        return deletedProduct;
+        return "Producto eliminado";
       } else {
         throw new Error(`Producto con id ${id} no encontrado`);
       }

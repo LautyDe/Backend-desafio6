@@ -3,8 +3,8 @@ import handlebars from "express-handlebars";
 import { Server } from "socket.io";
 import routers from "./src/routers/index.routers.js";
 import { __dirname } from "./src/utils.js";
-import ProductManager from "./src/dao/fs/productManagerFS.js";
-//import ProductManager from "./src/dao/mongo/productManagerMongo.js";
+//import ProductManager from "./src/dao/fs/productManagerFS.js";
+import ProductManager from "./src/dao/mongo/productManagerMongo.js";
 import ChatManager from "./src/dao/mongo/chatManagerMongo.js";
 import "./src/db/dbConfig.js";
 
@@ -53,11 +53,13 @@ socketServer.on("connection", async socket => {
 
   socket.on("newProduct", async data => {
     await productManager.addProduct(data);
+    const products = await productManager.getAll();
     socket.emit("products", products);
   });
 
   socket.on("deleteProduct", async id => {
-    const products = await productManager.deleteById(id);
+    await productManager.deleteById(id);
+    const products = await productManager.getAll();
     socket.emit("products", products);
   });
 
