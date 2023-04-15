@@ -20,7 +20,7 @@ export default class ProductManager {
 
   async getAll() {
     try {
-      const allProducts = await productsModel.find();
+      const allProducts = await productsModel.find().lean(); //leer lean()
       return allProducts;
     } catch (error) {
       console.log(`Error obteniendo todos los productos: ${error.message}`);

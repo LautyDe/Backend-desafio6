@@ -1,6 +1,6 @@
 import { Router } from "express";
-import ProductManager from "../../dao/fs/productManagerFS.js";
-//import ProductManager from "../../dao/mongo/productManagerMongo.js";
+//import ProductManager from "../../dao/fs/productManagerFS.js";
+import ProductManager from "../../dao/mongo/productManagerMongo.js";
 import ChatManager from "../../dao/mongo/chatManagerMongo.js";
 
 const router = Router();
@@ -14,6 +14,9 @@ router.get("/", async (req, res) => {
     style: "home.css",
     title: "Home",
     products: products,
+    handlebarsOptions: {
+      noEscape: true,
+    },
   });
 });
 

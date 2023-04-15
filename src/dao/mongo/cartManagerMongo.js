@@ -1,4 +1,5 @@
 import { cartsModel } from "../models/carts.model.js";
+import { productsModel } from "../models/products.model.js";
 
 export default class CartManager {
   async createCart() {
@@ -23,6 +24,32 @@ export default class CartManager {
 
   async addToCart(cid, pid) {
     try {
+      const cart = await cartsModel.findById(cid); //this.getById(cid);
+      if (!cart) {
+        throw new Error(`No se encontro un carrito con el id solicitado.`);
+      } else {
+        const product = await productsModel.findById(pid);
+        if (!product) {
+          throw new Error(`No se encontro el product con el id solicitado.`);
+        } else {
+          /* await cartsModel.findOneAndUpdate(
+          { _id: cid },
+          { $push: { products: { product: pid, quantity  } } }
+        ); */
+          const cartProduct = cart.products.find(
+            product => product.product.toString() === pid
+          );
+          if (cartProduct) {
+            cartProduct.quantity++;
+          } else {
+            console.log(cart);
+            cart.products.push({ product: pid, quantity: 1 });
+            console.log(cart);
+          }
+          //cart.save();
+          return cart;
+        }
+      }
     } catch (error) {
       console.log(`Error agregando producto al carrito: ${error.message}`);
     }
