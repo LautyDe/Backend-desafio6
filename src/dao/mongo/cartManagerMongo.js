@@ -32,21 +32,18 @@ export default class CartManager {
         if (!product) {
           throw new Error(`No se encontro el product con el id solicitado.`);
         } else {
-          /* await cartsModel.findOneAndUpdate(
-          { _id: cid },
-          { $push: { products: { product: pid, quantity  } } }
-        ); */
           const cartProduct = cart.products.find(
             product => product.product.toString() === pid
           );
           if (cartProduct) {
             cartProduct.quantity++;
           } else {
-            console.log(cart);
-            cart.products.push({ product: pid, quantity: 1 });
-            console.log(cart);
+            await cartsModel.findOneAndUpdate(
+              { _id: cid },
+              { $push: { products: { product: pid, quantity: 1 } } }
+            );
           }
-          //cart.save();
+          cart.save();
           return cart;
         }
       }
